@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEGO NINJAGO - Personagens</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>LEGO NINJAGO</h1>
+        <h2>Selecione seu Ninja</h2>
+
+        <form id="formNinja">
+
+            <input type="hidden" id="id">
+
+            <label>Nome:</label>
+            <input
+                type="text"
+                id="nome"
+                placeholder="Ex: Kai"
+                required
+            >
+
+            <label>Elemento:</label>
+
+            <select id="elemento" required>
+
+                <option value="">Selecione</option>
+
+                <option value="Fogo"> Fogo</option>
+                <option value="Gelo"> Gelo</option>
+                <option value="Relâmpago"> Relâmpago</option>
+                <option value="Terra"> Terra</option>
+                <option value="Energia"> Energia</option>
+                <option value="Água"> Água</option>
+                <option value="Criação"> Criação</option>
+
+            </select>
+
+            <label>Arma:</label>
+
+            <input
+                type="text"
+                id="arma"
+                placeholder="Ex: Espada"
+                required
+            >
+
+            <label>Nível:</label>
+
+            <input
+                type="number"
+                id="nivel"
+                min="1"
+                max="100"
+                placeholder="Ex: 50"
+                required
+            >
+
+            <label>Status:</label>
+
+            <select id="status" required>
+
+                <option value="">Selecione</option>
+                <option value="Ninja">Ninja</option>
+                <option value="Treinando">Treinando</option>
+                <option value="Mestre">Mestre</option>
+
+            </select>
+
+            <button type="submit" id="btnSalvar">
+                Seu Ninja
+            </button>
+
+            <button
+                type="button"
+                id="btnCancelar"
+                onclick="cancelarEdicao()">
+
+                Cancelar
+
+            </button>
+
+        </form>
+
+
+        <hr>
+
+
+        <h2>Ninjas cadastrados</h2>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Elemento</th>
+                    <th>Arma</th>
+                    <th>Nível</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="listaNinjas"></tbody>
+
+        </table>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>

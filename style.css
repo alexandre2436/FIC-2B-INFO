@@ -1,0 +1,182 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+   font-family: Arial, sans-serif;
+
+   background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSSk49ut73uvETKc0daHFYgK7EbOzyhQIsTVJVkGiF-N2kZw1xXMGA5eRkR&s=10);
+   background-size: cover; 
+   background-position: center;
+   background-attachment: fixed;
+   background-repeat: no-repeat;
+
+   color: white;
+   padding: 30px;
+}
+
+
+.container {
+
+    max-width: 1100px;
+
+    margin: auto;
+
+    background: #056205;
+
+    padding: 30px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 0 20px #4cc95f;
+}
+
+
+h1 {
+
+    text-align: center;
+
+    font-size: 40px;
+
+    margin-bottom: 10px;
+}
+
+
+h2 {
+
+    margin: 20px 0;
+}
+
+
+form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+label {
+
+    font-weight: bold;
+
+    margin-top: 8px;
+}
+
+
+input,
+select {
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    font-size: 16px;
+
+    background: #eee;
+
+    color: #111;
+}
+
+
+button {
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    margin-top: 10px;
+}
+
+
+#btnSalvar {
+
+    background: #e63946;
+
+    color: white;
+}
+
+
+#btnCancelar {
+
+    background: #666;
+
+    color: white;
+
+    display: none;
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 20px;
+}
+
+
+th,
+td {
+
+    padding: 12px;
+
+    text-align: center;
+
+    border-bottom: 1px solid #444;
+}
+
+
+th {
+
+    background: #111;
+}
+
+
+.editar {
+
+    background: #2196f3;
+
+    color: white;
+
+    padding: 8px;
+}
+
+
+.excluir {
+
+    background: #e63946;
+
+    color: white;
+
+    padding: 8px;
+}
+
+
+button:hover {
+
+    opacity: 0.8;
+}
+
+
+hr {
+
+    border: none;
+
+    border-top: 1px solid #444;
+
+    margin-top: 30px;
+}
