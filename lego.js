@@ -1,13 +1,8 @@
-// ==============================
-// ELEMENTOS DO HTML
-// ==============================
-
 const game = document.getElementById("game");
 const ninja = document.getElementById("ninja");
 const objects = document.getElementById("objects");
 
 const scoreElement = document.getElementById("score");
-const coinsElement = document.getElementById("coins");
 const message = document.getElementById("message");
 
 const startButton = document.getElementById("startButton");
@@ -26,7 +21,6 @@ let paused = false;
 let gameOver = false;
 
 let score = 0;
-let coins = 0;
 
 let ninjaX = 0;
 let ninjaY = 0;
@@ -37,26 +31,37 @@ let movingRight = false;
 let jumping = false;
 
 let obstacles = [];
+
 let lastTime = 0;
 let spawnTimer = 0;
-let coinTimer = 0;
+let nextSpawn = 1.5;
 let animationId = null;
 
 const gravity = 1800;
 const jumpForce = 650;
 const moveSpeed = 350;
-const groundHeight = 100;
 
 // ==============================
-// POSIÇÃO INICIAL
+// CHÃO
+// ==============================
+
+function getGroundTop() {
+    if (game.clientHeight <= 500) {
+        return game.clientHeight - 65;
+    }
+
+    return game.clientHeight - 100;
+}
+
+// ==============================
+// REINICIAR
 // ==============================
 
 function resetGame() {
     score = 0;
-    coins = 0;
 
     ninjaX = game.clientWidth * 0.15;
-    ninjaY = 0;
+    ninjaY = getGroundTop() - ninja.offsetHeight;
     velocityY = 0;
 
     movingLeft = false;
@@ -65,28 +70,17 @@ function resetGame() {
 
     obstacles = [];
     spawnTimer = 0;
-    coinTimer = 0;
+    nextSpawn = 1.5;
 
     objects.innerHTML = "";
-
     scoreElement.textContent = "00000";
-    coinsElement.textContent = "0";
 
     ninja.classList.remove("running", "jumping");
+
     ninja.style.left = ninjaX + "px";
-    ninja.style.top = getGroundTop() - ninja.offsetHeight + "px";
+    ninja.style.top = ninjaY + "px";
 
     pauseButton.textContent = "Ⅱ PAUSAR";
-}
-
-function getGroundTop() {
-    const height = game.clientHeight;
-
-    if (height <= 500) {
-        return height - 65;
-    }
-
-    return height - groundHeight;
 }
 
 // ==============================
@@ -110,14 +104,13 @@ function startGame() {
     message.style.display = "none";
 
     lastTime = performance.now();
-
     animationId = requestAnimationFrame(gameLoop);
 }
 
 startButton.addEventListener("click", startGame);
 
 // ==============================
-// MOVIMENTAÇÃO DO NINJA
+// MOVIMENTAR O NINJA
 // ==============================
 
 function moveNinja(deltaTime) {
@@ -131,17 +124,16 @@ function moveNinja(deltaTime) {
         ninjaX += moveSpeed * deltaTime;
     }
 
-    // Impede o ninja de sair da tela
     ninjaX = Math.max(0, Math.min(ninjaX, maxX));
 
-    // Movimento do pulo
+    // Gravidade e pulo
     velocityY += gravity * deltaTime;
     ninjaY += velocityY * deltaTime;
 
-    const groundTop = getGroundTop() - ninja.offsetHeight;
+    const groundY = getGroundTop() - ninja.offsetHeight;
 
-    if (ninjaY >= groundTop) {
-        ninjaY = groundTop;
+    if (ninjaY >= groundY) {
+        ninjaY = groundY;
         velocityY = 0;
         jumping = false;
     }
@@ -149,7 +141,6 @@ function moveNinja(deltaTime) {
     ninja.style.left = ninjaX + "px";
     ninja.style.top = ninjaY + "px";
 
-    // Animação das pernas
     ninja.classList.toggle(
         "running",
         (movingLeft || movingRight) && !jumping
@@ -157,6 +148,10 @@ function moveNinja(deltaTime) {
 
     ninja.classList.toggle("jumping", jumping);
 }
+
+// ==============================
+// PULAR
+// ==============================
 
 function jump() {
     if (!running || paused || gameOver) return;
@@ -168,10 +163,10 @@ function jump() {
 }
 
 // ==============================
-// TECLADO
+// CONTROLES DO TECLADO
 // ==============================
 
-document.addEventListener("keydown", function (event) {
+document.addEventListener("keydown", function(event) {
     const key = event.key.toLowerCase();
 
     if (
@@ -196,12 +191,12 @@ document.addEventListener("keydown", function (event) {
         jump();
     }
 
-    if (key === "escape" && running && !gameOver) {
+    if (key === "escape") {
         togglePause();
     }
 });
 
-document.addEventListener("keyup", function (event) {
+document.addEventListener("keyup", function(event) {
     const key = event.key.toLowerCase();
 
     if (key === "arrowleft" || key === "a") {
@@ -213,8 +208,8 @@ document.addEventListener("keyup", function (event) {
     }
 });
 
-// Evita que o ninja continue andando ao perder o foco
-window.addEventListener("blur", function () {
+// Evita movimento preso ao trocar de janela
+window.addEventListener("blur", function() {
     movingLeft = false;
     movingRight = false;
 });
@@ -224,8 +219,9 @@ window.addEventListener("blur", function () {
 // ==============================
 
 function holdButton(button, onPress, onRelease) {
-    button.addEventListener("pointerdown", function (event) {
+    button.addEventListener("pointerdown", function(event) {
         event.preventDefault();
+
         onPress();
 
         if (button.setPointerCapture) {
@@ -240,25 +236,25 @@ function holdButton(button, onPress, onRelease) {
 
 holdButton(
     leftButton,
-    function () {
+    function() {
         movingLeft = true;
     },
-    function () {
+    function() {
         movingLeft = false;
     }
 );
 
 holdButton(
     rightButton,
-    function () {
+    function() {
         movingRight = true;
     },
-    function () {
+    function() {
         movingRight = false;
     }
 );
 
-jumpButton.addEventListener("pointerdown", function (event) {
+jumpButton.addEventListener("pointerdown", function(event) {
     event.preventDefault();
     jump();
 });
@@ -285,28 +281,16 @@ function togglePause() {
 pauseButton.addEventListener("click", togglePause);
 
 // ==============================
-// CRIAR OBSTÁCULOS E MOEDAS
+// CRIAR OBSTÁCULOS
 // ==============================
 
-function createObject(type) {
+function createObstacle() {
     const element = document.createElement("div");
 
-    element.classList.add(type);
+    element.classList.add("obstacle");
 
-    const size = type === "coin" ? 26 : 42;
-    const maxX = Math.max(0, game.clientWidth - size);
-
-    const x = Math.random() * maxX;
-
-    let y;
-
-    if (type === "coin") {
-        // Algumas moedas ficam no ar para incentivar o pulo
-        y = getGroundTop() - 50 -
-            Math.random() * Math.min(150, game.clientHeight * 0.3);
-    } else {
-        y = getGroundTop() - 53;
-    }
+    const x = game.clientWidth + 10;
+    const y = getGroundTop() - 53;
 
     element.style.left = x + "px";
     element.style.top = y + "px";
@@ -317,27 +301,24 @@ function createObject(type) {
         element: element,
         x: x,
         y: y,
-        type: type,
-        width: size,
-        height: type === "coin" ? 26 : 53,
-        speed: 230 + Math.min(score * 0.025, 180)
+        width: 42,
+        height: 53,
+        speed: 260 + Math.min(score * 0.15, 180)
     });
 }
 
+// ==============================
+// GERAR OBSTÁCULOS
+// ==============================
+
 function spawnObjects(deltaTime) {
     spawnTimer += deltaTime;
-    coinTimer += deltaTime;
 
-    // Obstáculos surgem em intervalos aleatórios
-    if (spawnTimer >= 1.3 + Math.random() * 0.6) {
-        createObject("obstacle");
+    if (spawnTimer >= nextSpawn) {
+        createObstacle();
+
         spawnTimer = 0;
-    }
-
-    // Moedas aparecem com menos frequência
-    if (coinTimer >= 1.8 + Math.random() * 1.2) {
-        createObject("coin");
-        coinTimer = 0;
+        nextSpawn = 1.4 + Math.random() * 0.8;
     }
 }
 
@@ -357,22 +338,10 @@ function isColliding(a, b) {
 function checkCollisions() {
     const ninjaRect = ninja.getBoundingClientRect();
 
-    for (let i = obstacles.length - 1; i >= 0; i--) {
-        const obj = obstacles[i];
+    for (const obj of obstacles) {
         const rect = obj.element.getBoundingClientRect();
 
-        if (!isColliding(ninjaRect, rect)) {
-            continue;
-        }
-
-        if (obj.type === "coin") {
-            coins++;
-            score += 100;
-
-            coinsElement.textContent = coins;
-            obj.element.remove();
-            obstacles.splice(i, 1);
-        } else {
+        if (isColliding(ninjaRect, rect)) {
             endGame();
             return;
         }
@@ -380,16 +349,14 @@ function checkCollisions() {
 }
 
 // ==============================
-// ATUALIZAR OBJETOS
+// MOVIMENTAR OBSTÁCULOS
 // ==============================
 
 function updateObjects(deltaTime) {
     for (let i = obstacles.length - 1; i >= 0; i--) {
         const obj = obstacles[i];
 
-        // Os objetos vêm da direita para a esquerda
         obj.x -= obj.speed * deltaTime;
-
         obj.element.style.left = obj.x + "px";
 
         if (obj.x + obj.width < 0) {
@@ -425,15 +392,14 @@ function endGame() {
 
     ninja.classList.remove("running", "jumping");
 
-    message.style.display = "flex";
-
     message.innerHTML = `
         <h1 class="game-over-title">FIM DE JOGO!</h1>
         <p>Sua pontuação: ${Math.floor(score)}</p>
-        <p>Moedas coletadas: ${coins}</p>
         <p>Não desista, ninja! Tente novamente.</p>
         <button id="startButton">JOGAR NOVAMENTE</button>
     `;
+
+    message.style.display = "flex";
 
     document.getElementById("startButton")
         .addEventListener("click", startGame);
@@ -458,7 +424,6 @@ function gameLoop(timestamp) {
         return;
     }
 
-    // Evita saltos grandes de movimento quando o navegador trava
     const deltaTime = Math.min(
         (timestamp - lastTime) / 1000,
         0.035
@@ -470,19 +435,34 @@ function gameLoop(timestamp) {
     spawnObjects(deltaTime);
     updateObjects(deltaTime);
     checkCollisions();
+
+    if (!running) return;
+
     updateScore(deltaTime);
 }
 
 // ==============================
-// AJUSTE AO REDIMENSIONAR A TELA
+// AJUSTAR AO REDIMENSIONAR A TELA
 // ==============================
 
-window.addEventListener("resize", function () {
+window.addEventListener("resize", function() {
     const maxX = game.clientWidth - ninja.offsetWidth;
 
     ninjaX = Math.max(0, Math.min(ninjaX, maxX));
 
     if (running || gameOver) {
         ninja.style.left = ninjaX + "px";
+
+        if (!jumping) {
+            ninjaY = getGroundTop() - ninja.offsetHeight;
+            ninja.style.top = ninjaY + "px";
+        }
     }
 });
+
+// Posição inicial do ninja
+ninjaX = game.clientWidth * 0.15;
+ninjaY = getGroundTop() - ninja.offsetHeight;
+
+ninja.style.left = ninjaX + "px";
+ninja.style.top = ninjaY + "px";
