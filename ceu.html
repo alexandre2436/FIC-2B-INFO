@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style1.css">
-<title>Ninja Runner</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Runner</title>
+    <link rel="stylesheet" href="style1.css">
+    <script src="game.js" defer></script>
 </head>
-
 <body>
 
-<div class="game">
+<div class="game" id="game">
 
     <div class="moon"></div>
 
@@ -19,69 +19,62 @@
         <div class="mountain"></div>
     </div>
 
-    <!-- BAMBUS -->
-
     <div class="bamboo-area">
-
         <div class="bamboo b1"></div>
         <div class="bamboo b2"></div>
         <div class="bamboo b3"></div>
         <div class="bamboo b4"></div>
-
         <div class="bamboo b5"></div>
         <div class="bamboo b6"></div>
         <div class="bamboo b7"></div>
         <div class="bamboo b8"></div>
-
         <div class="leaf leaf1"></div>
         <div class="leaf leaf2"></div>
         <div class="leaf leaf3"></div>
         <div class="leaf leaf4"></div>
-
     </div>
 
-    <!-- PERSONAGEM -->
+    <div class="title">🥷 NINJA RUNNER</div>
 
-    <div class="ninja">
+    <div class="hud">
+        <div class="score">SCORE: <span id="score">00000</span></div>
+        <div class="coins">MOEDAS: <span id="coins">0</span></div>
+    </div>
 
+    <div class="ninja" id="ninja">
         <div class="head"></div>
-
+        <div class="eye"></div>
         <div class="body"></div>
-
+        <div class="scarf"></div>
         <div class="arm left"></div>
         <div class="arm right"></div>
-
         <div class="leg left"></div>
         <div class="leg right"></div>
-
     </div>
 
-    <!-- OBSTÁCULO -->
-
-    <div class="obstacle"></div>
-
-    <!-- MOEDA -->
-
-    <div class="coin"></div>
-
-    <!-- PLACAR -->
-
-    <div class="title">
-        NINJA RUNNER
-    </div>
-
-    <div class="score">
-        SCORE: 00000
-    </div>
-
-    <!-- CHÃO -->
+    <div class="objects" id="objects"></div>
 
     <div class="ground">
         <div class="grass"></div>
     </div>
 
+    <div class="message" id="message">
+        <h1>NINJA RUNNER</h1>
+        <p>Prepare-se para a aventura ninja!</p>
+        <p>← → ou A / D para movimentar</p>
+        <p>ESPAÇO, ↑ ou W para pular</p>
+        <button id="startButton">JOGAR</button>
+    </div>
+
+    <div class="mobile-controls">
+        <button id="leftButton" aria-label="Mover para esquerda">◀</button>
+        <button id="jumpButton" aria-label="Pular">⬆ PULAR</button>
+        <button id="rightButton" aria-label="Mover para direita">▶</button>
+    </div>
+
+    <button class="pause-button" id="pauseButton">Ⅱ PAUSAR</button>
+
 </div>
 
 </body>
 </html>
-
