@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Runner</title>
+    <link rel="stylesheet" href="style1.css">
+    <script src="lego.js" defer></script>
+</head>
+<body>
+
+<div class="game" id="game">
+
+    <div class="moon"></div>
+
+    <div class="mountains">
+        <div class="mountain"></div>
+        <div class="mountain"></div>
+        <div class="mountain"></div>
+    </div>
+
+    <div class="bamboo-area">
+        <div class="bamboo b1"></div>
+        <div class="bamboo b2"></div>
+        <div class="bamboo b3"></div>
+        <div class="bamboo b4"></div>
+        <div class="bamboo b5"></div>
+        <div class="bamboo b6"></div>
+        <div class="bamboo b7"></div>
+        <div class="bamboo b8"></div>
+        <div class="leaf leaf1"></div>
+        <div class="leaf leaf2"></div>
+        <div class="leaf leaf3"></div>
+        <div class="leaf leaf4"></div>
+    </div>
+
+    <div class="title"> NINJA RUNNER</div>
+
+    <div class="hud">
+        <div class="score">SCORE: <span id="score">00000</span></div>
+    </div>
+
+    <div class="ninja" id="ninja">
+        <div class="head"></div>
+        <div class="eye"></div>
+        <div class="body"></div>
+        <div class="scarf"></div>
+        <div class="arm left"></div>
+        <div class="arm right"></div>
+        <div class="leg left"></div>
+        <div class="leg right"></div>
+    </div>
+
+    <div class="objects" id="objects"></div>
+
+    <div class="ground">
+        <div class="grass"></div>
+    </div>
+
+    <div class="message" id="message">
+        <h1>NINJA RUNNER</h1>
+        <p>Prepare-se para a aventura ninja!</p>
+        <p></p>A / D para movimentar</p>
+        <p>ESPAÇO ou W para pular</p>
+        <button id="startButton">JOGAR</button>
+    </div>
+
+    <div class="mobile-controls">
+        <button id="leftButton" aria-label="Mover para esquerda"></button>
+        <button id="jumpButton" aria-label="Pular"></button>
+        <button id="rightButton" aria-label="Mover para direita"></button>
+    </div>
+
+    <button class="pause-button" id="pauseButton">PAUSAR</button>
+
+</div>
+
+</body>
+</html>
