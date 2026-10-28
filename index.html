@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>screenshot</title>
+  <link rel="stylesheet" href="css.css" type="text/css" media="all" />
+</head>
+
+<body>
+<header>
+  <nav>
+    <ul>
+      <li><a href="PODIO.html">PODIO</a></li>
+      <li><a href="index.html">PLAYER</a></li>
+    </ul>
+  </nav>
+</header>
+
+  <section class="boddy">
+
+    <main class="container">
+
+      <!--formulario de cadastro-->
+
+
+      <section class="formulario">
+        <div class="logo-container">
+            <img src="logo.png" alt="logo" class="logo" />
+          </div>
+    
+        <form id="formpersona">
+
+          <div class="campo">
+            <label for="nome">Nickname:</label>
+
+            <input type="text" id="nome" placeholder="nome do seu personagem..." maxlength="20" required />
+          </div>
+
+          <div class="campo">
+
+            <label for="difficulty">Difficulty:</label>
+            <select id="difficulty" name="difficulty">
+              <option value="Yuumiliy mode">Cry Baby</option>
+              <option value="normal" selected>Normal</option>
+              <option value="brutal">Brutal</option>
+            </select>
+
+          </div>
+          <div class="campo">
+           <button type="submit" class="blood">SAVE CREATE</button>
+          </div>
+          </button>
+
+        </form>
+      </section>
+
+
+      <div id="contador-container">
+        <strong id="play2">Quantidade de jogadores: <span id="contador"> 0 </span></strong>
+      </div>
+
+    </main>
+
+    <div id="lista"></div>
+  
+  <audio id="musica" src="Audio/My game ost.mp3" loop></audio>
+
+  <script src="javascript.js"></script>
+</body>
+
+</html>
