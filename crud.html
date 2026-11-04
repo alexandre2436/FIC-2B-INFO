@@ -1,132 +1,566 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LEGO NINJAGO - Personagens</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ninjago API - Pokédex</title>
 
-    <link rel="stylesheet" href="style.css">
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #10131b;
+    color: white;
+    font-family: Arial, sans-serif;
+    padding: 25px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #e63946;
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+header p {
+    color: #aaa;
+}
+
+.controls {
+    max-width: 1000px;
+    margin: auto;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+input, select, button {
+    padding: 13px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+input, select {
+    background: #252b38;
+    color: white;
+}
+
+input {
+    flex: 1;
+    min-width: 180px;
+}
+
+button {
+    background: #e63946;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #bd2633;
+}
+
+#status {
+    text-align: center;
+    color: #aaa;
+    margin: 20px;
+}
+
+#characters {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 18px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.card {
+    background: #202633;
+    border-radius: 12px;
+    padding: 18px;
+    cursor: pointer;
+    transition: .2s;
+    border: 1px solid #343d4e;
+    overflow-wrap: anywhere;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    border-color: #e63946;
+}
+
+.card img {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+    margin-bottom: 12px;
+}
+
+.card h3 {
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.card p {
+    color: #aaa;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 30px;
+}
+
+#pageNumber {
+    color: white;
+}
+
+#modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #000c;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    z-index: 10;
+}
+
+.modal-content {
+    background: #202633;
+    padding: 25px;
+    border-radius: 15px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    color: #e63946;
+    margin-bottom: 15px;
+}
+
+.modal-content pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #ddd;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.close {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+}
+
+@media(max-width: 500px) {
+    body {
+        padding: 12px;
+    }
+
+    header h1 {
+        font-size: 27px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-    <div class="container">
+<header>
+    <h1>🥷 NINJAGO DATABASE</h1>
+    <p>Explore personagens e o universo Ninjago</p>
+</header>
 
-        <h1>LEGO NINJAGO</h1>
-        <h2>Selecione seu Ninja</h2>
+<div class="controls">
 
-        <form id="formNinja">
+    <input
+        type="text"
+        id="search"
+        placeholder="Pesquisar personagem..."
+    >
 
-            <input type="hidden" id="id">
+    <select id="elementFilter">
+        <option value="">Todos os elementos</option>
+    </select>
 
-            <label>Nome:</label>
-            <input
-                type="text"
-                id="nome"
-                placeholder="Ex: Kai"
-                required
-            >
+    <button onclick="loadCharacters(1)">
+        Pesquisar
+    </button>
 
-            <label>Elemento:</label>
+</div>
 
-            <select id="elemento" required>
+<div id="status">Carregando personagens...</div>
 
-                <option value="">Selecione</option>
+<div id="characters"></div>
 
-                <option value="Fogo"> Fogo</option>
-                <option value="Gelo"> Gelo</option>
-                <option value="Relâmpago"> Relâmpago</option>
-                <option value="Terra"> Terra</option>
-                <option value="Energia"> Energia</option>
-                <option value="Água"> Água</option>
-                <option value="Criação"> Criação</option>
+<div id="pagination">
+    <button onclick="changePage(-1)">Anterior</button>
+    <span id="pageNumber">Página 1</span>
+    <button onclick="changePage(1)">Próxima</button>
+</div>
 
-            </select>
+<div id="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">×</span>
+<h2 id="modalTitle"></h2>
 
-            <label>Arma:</label>
+<img
+    id="modalImage"
+    src=""
+    alt="Imagem do personagem"
+    style="
+        width: 100%;
+        max-height: 250px;
+        object-fit: contain;
+        margin-bottom: 15px;
+        display: none;
+    "
+>
 
-             <select id="arma" required>
-                <option value="Selecione">Selecione</option>
-                 <option value="Kunai"> Kunai</option>
-                <option value="Shuriken"> Shuriken</option>
-                <option value="Katana"> Katana</option>
-             </select>
-
-
-            <label>Nível:</label>
-
-            <input
-                type="number"
-                id="nivel"
-                min="1"
-                max="100"
-                placeholder="Ex: 50"
-                required
-            >
-
-            <label>Status:</label>
-
-            <select id="status" required>
-
-                <option value="">Selecione</option>
-                <option value="Ninja">Ninja</option>
-                <option value="Treinando">Treinando</option>
-                <option value="Mestre">Mestre</option>
-
-            </select>
-
-            <button type="submit" id="btnSalvar">
-                Seu Ninja
-            </button>
-
-            <button
-                type="button"
-                id="btnCancelar"
-                onclick="cancelarEdicao()">
-
-                Cancelar
-
-            </button>
-
-        </form>
-
-
-        <hr>
-
-
-        <h2>Ninjas cadastrados</h2>
-
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Elemento</th>
-                    <th>Arma</th>
-                    <th>Nível</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="listaNinjas"></tbody>
-
-        </table>
- <button type="button" onclick="window.location.href='ceu.html'">
-    jogar
-</button>
-
+<pre id="modalData"></pre>
     </div>
+</div>
+
+<script>
+
+// ===================================
+// CONFIGURAÇÃO
+// ===================================
+
+const API = "https://spinjitzu-api.vercel.app/api/v1";
+
+let currentPage = 1;
+let totalPages = 1;
 
 
-    <script src="script.js"></script>
+// ===================================
+// FUNÇÕES AUXILIARES
+// ===================================
+
+async function apiRequest(endpoint) {
+
+    const response = await fetch(API + endpoint);
+
+    if (!response.ok) {
+        throw new Error("Erro HTTP: " + response.status);
+    }
+
+    return await response.json();
+}
+
+
+function getImage(character) {
+
+    const possibleFields = [
+        "image",
+        "imageUrl",
+        "imageURL",
+        "thumbnail",
+        "photo",
+        "picture"
+    ];
+
+    for (const field of possibleFields) {
+
+        if (typeof character[field] === "string") {
+            return character[field];
+        }
+
+        if (
+            character[field] &&
+            typeof character[field].url === "string"
+        ) {
+            return character[field].url;
+        }
+    }
+
+    return null;
+}
+
+
+function getName(character) {
+
+    return character.name ||
+           character.title ||
+           "Personagem sem nome";
+}
+
+
+function getElement(character) {
+
+    const element = character.element;
+
+    if (typeof element === "string") {
+        return element;
+    }
+
+    if (element && typeof element === "object") {
+        return element.name || "Não informado";
+    }
+
+    return "Não informado";
+}
+
+
+// ===================================
+// CARREGAR PERSONAGENS
+// ===================================
+
+async function loadCharacters(page = 1) {
+
+    const container = document.getElementById("characters");
+    const status = document.getElementById("status");
+
+    currentPage = page;
+
+    container.innerHTML = "";
+    status.textContent = "Carregando...";
+
+    try {
+
+        const search = document.getElementById("search").value.trim();
+
+        const element = document.getElementById("elementFilter").value;
+
+        const params = new URLSearchParams();
+
+        params.set("page", page);
+        params.set("limit", 20);
+
+        if (search) {
+            params.set("name", search);
+        }
+
+        if (element) {
+            params.set("element", element);
+        }
+
+        const result = await apiRequest(
+            "/characters?" + params.toString()
+        );
+
+        const characters = result.data || [];
+
+        totalPages = result.meta?.totalPages || 1;
+
+        status.textContent =
+            characters.length + " personagens encontrados";
+
+        document.getElementById("pageNumber").textContent =
+            `Página ${currentPage} de ${totalPages}`;
+
+        if (characters.length === 0) {
+
+            status.textContent = "Nenhum personagem encontrado.";
+
+            return;
+        }
+
+        characters.forEach(character => {
+
+            const card = document.createElement("div");
+
+            card.className = "card";
+
+            const name = document.createElement("h3");
+            name.textContent = getName(character);
+
+            const id = document.createElement("p");
+            id.textContent = "ID: " + character.id;
+
+            const elementText = document.createElement("p");
+            elementText.textContent =
+                "Elemento: " + getElement(character);
+
+            const imageUrl = getImage(character);
+
+            if (imageUrl) {
+
+                const img = document.createElement("img");
+
+                img.src = imageUrl;
+                img.alt = getName(character);
+                img.loading = "lazy";
+
+                img.onerror = () => img.remove();
+
+                card.appendChild(img);
+            }
+
+            card.appendChild(name);
+            card.appendChild(id);
+            card.appendChild(elementText);
+
+            card.addEventListener("click", () => {
+                showDetails(character);
+            });
+
+            container.appendChild(card);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.textContent =
+            "Não foi possível carregar os personagens. Verifique a API.";
+
+    }
+}
+
+
+// ===================================
+// CARREGAR ELEMENTOS
+// ===================================
+
+async function loadElements() {
+
+    try {
+
+        const result = await apiRequest("/elements");
+
+        const elements = result.data || [];
+
+        const select = document.getElementById("elementFilter");
+
+        elements.forEach(element => {
+
+            const option = document.createElement("option");
+
+            option.value = element.name;
+            option.textContent = element.name;
+
+            select.appendChild(option);
+
+        });
+
+    } catch (error) {
+
+        console.error("Erro ao carregar elementos:", error);
+
+    }
+
+}
+
+
+// ===================================
+// DETALHES DO PERSONAGEM
+// ===================================
+
+function showDetails(character) {
+
+    document.getElementById("modalTitle").textContent =
+        getName(character);
+
+    const modalImage = document.getElementById("modalImage");
+
+    const imageUrl = getImage(character);
+
+    if (imageUrl) {
+        modalImage.src = imageUrl;
+        modalImage.style.display = "block";
+
+        modalImage.onerror = () => {
+            modalImage.style.display = "none";
+        };
+
+    } else {
+        modalImage.style.display = "none";
+        modalImage.src = "";
+    }
+
+    document.getElementById("modalData").textContent =
+        JSON.stringify(character, null, 2);
+
+    document.getElementById("modal").style.display = "flex";
+
+}
+
+
+function closeModal() {
+
+    document.getElementById("modal").style.display = "none";
+
+}
+
+
+// ===================================
+// PAGINAÇÃO
+// ===================================
+
+function changePage(direction) {
+
+    const nextPage = currentPage + direction;
+
+    if (nextPage < 1 || nextPage > totalPages) {
+        return
+;
+    }
+
+    loadCharacters(nextPage);
+
+}
+
+
+// ===================================
+// EVENTOS
+// ===================================
+
+document.getElementById("search")
+    .addEventListener("keydown", event => {
+
+        if (event.key === "Enter") {
+            loadCharacters(1);
+        }
+
+    });
+
+
+document.getElementById("elementFilter")
+    .addEventListener("change", () => {
+
+        loadCharacters(1);
+
+    });
+
+
+document.getElementById("modal")
+    .addEventListener("click", event => {
+
+        if (event.target.id === "modal") {
+            closeModal();
+        }
+
+    });
+
+
+// ===================================
+// INICIALIZAÇÃO
+// ===================================
+
+loadElements();
+loadCharacters(1);
+
+</script>
 
 </body>
 </html>
